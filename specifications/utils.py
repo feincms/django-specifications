@@ -19,8 +19,8 @@ def specification_values_comparison(*instances):
     Returns a data structure most useful to display a comparison between
     different instances with the same specification.
     """
-    ValueField = instances[0].fields.model
-    indices = dict((instance.pk, idx) for idx, instance in enumerate(instances))
+    ValueField = instances[0].fields.model  # noqa: N806 -- it's a model class
+    indices = {instance.pk: idx for idx, instance in enumerate(instances)}
     groups = defaultdict(lambda: defaultdict(lambda: [None] * len(instances)))
 
     for field in ValueField._default_manager.filter(

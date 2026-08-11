@@ -17,7 +17,17 @@ class SpecificationFieldGroupInline(admin.TabularInline):
 class SpecificationFieldForm(forms.ModelForm):
     class Meta:
         model = models.SpecificationField
-        fields = "__all__"
+        # All editable fields except ``specification``, which is provided by
+        # the inline's parent instance. The ordering differs from the model's.
+        fields = (
+            "group",
+            "name",
+            "type",
+            "choices",
+            "help_text",
+            "required",
+            "ordering",
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -59,8 +69,7 @@ class SpecificationFieldInline(admin.TabularInline):
     model = models.SpecificationField
     form = SpecificationFieldForm
     extra = 0
-    # All fields, but different ordering:
-    fields = ("group", "name", "type", "choices", "help_text", "required", "ordering")
+    fields = SpecificationFieldForm.Meta.fields
 
 
 admin.site.register(

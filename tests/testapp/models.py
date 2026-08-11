@@ -7,6 +7,9 @@ class Stuff(models.Model):
     specification = models.ForeignKey(Specification, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class StuffField(SpecificationValueFieldBase):
     parent = models.ForeignKey(Stuff, on_delete=models.CASCADE, related_name="fields")

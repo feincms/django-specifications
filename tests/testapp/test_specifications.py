@@ -3,10 +3,10 @@ import re
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
-from testapp.models import Stuff
 
 from specifications.models import Specification, SpecificationField
 from specifications.utils import specification_values_dict
+from testapp.models import Stuff
 
 
 class SpecificationsTest(TestCase):
@@ -129,7 +129,7 @@ class SpecificationsTest(TestCase):
             ["Specification", "monitor", "computer"],
         )
 
-        field_ids = set(field.field_id for field in stuff.fields.all())
+        field_ids = {field.field_id for field in stuff.fields.all()}
         self.assertEqual(stuff.fields.count(), 5)
 
         # Delete several fields at once to test the Specification.update_fields code
@@ -144,7 +144,7 @@ class SpecificationsTest(TestCase):
         sf3.delete()
 
         self.assertEqual(
-            set(field.field_id for field in stuff.fields.all()), new_field_ids | {None}
+            {field.field_id for field in stuff.fields.all()}, new_field_ids | {None}
         )
 
         response = client.get(reverse("admin:testapp_stuff_change", args=(stuff.pk,)))

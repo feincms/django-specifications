@@ -125,7 +125,7 @@ class SpecificationFieldBase(models.Model):
         return self.name
 
     def get_type(self, **kwargs):
-        types = dict((r[0], r[2]) for r in self.TYPES)
+        types = {r[0]: r[2] for r in self.TYPES}
         return types[self.type](**kwargs)
 
     @property
@@ -168,7 +168,7 @@ class SpecificationField(SpecificationFieldBase):
     @property
     def fullname(self):
         if self.group:
-            return "%s - %s" % (self.group, self.name)
+            return f"{self.group} - {self.name}"
         return self.name
 
 
@@ -204,7 +204,7 @@ class SpecificationValueFieldBase(SpecificationFieldBase):
 
     @property
     def choices_cache_key(self):
-        return "svfb_choices_%s" % self.field_id
+        return f"svfb_choices_{self.field_id}"
 
     def clobber_choices_cache(self):
         cache.delete(self.choices_cache_key)
@@ -253,7 +253,11 @@ class SpecificationValueFieldBase(SpecificationFieldBase):
         return list(choices)
 
     def formfield(self, form=None):
-        kwargs = dict(label=self.name, required=self.required, help_text=self.help_text)
+        kwargs = {
+            "label": self.name,
+            "required": self.required,
+            "help_text": self.help_text,
+        }
 
         if self.value:
             if "multiple" in self.type:
@@ -262,16 +266,15 @@ class SpecificationValueFieldBase(SpecificationFieldBase):
                 kwargs["initial"] = self.value
         if self.choices or "open_set" in self.type:
             choices = self.get_choices()
-            if self.type == "open_set_single":
-                # Ensure the current value is available too
-
-                if (
-                    form
-                    and form.instance
-                    and kwargs.get("initial")
-                    and kwargs["initial"] not in dict(choices)
-                ):
-                    choices = [(kwargs["initial"], kwargs["initial"])] + choices
+            # Ensure the current value is available too
+            if (
+                self.type == "open_set_single"
+                and form
+                and form.instance
+                and kwargs.get("initial")
+                and kwargs["initial"] not in dict(choices)
+            ):
+                choices = [(kwargs["initial"], kwargs["initial"])] + choices
             kwargs["choices"] = choices
 
         return self.get_type(**kwargs)

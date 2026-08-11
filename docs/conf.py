@@ -1,16 +1,15 @@
-from __future__ import unicode_literals
-
-from datetime import date
 import os
 import re
 import subprocess
 import sys
+from datetime import datetime, timezone
+
 
 sys.path.append(os.path.abspath(".."))
 
 project = "django-specifications"
 author = "Feinheit AG"
-copyright = "2012-%s, %s" % (date.today().year, author)
+copyright = f"2012-{datetime.now(tz=timezone.utc).year}, {author}"
 version = __import__("specifications").__version__
 release = subprocess.check_output(
     "git fetch --tags; git describe", shell=True, universal_newlines=True
